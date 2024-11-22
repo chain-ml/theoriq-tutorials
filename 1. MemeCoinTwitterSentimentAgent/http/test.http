@@ -1,0 +1,30 @@
+### Liveness
+GET {{host}}/livez
+
+### Readiness
+GET {{host}}/readyz
+
+### Memecoin Twitter Agent
+POST {{host}}/api/v1alpha1/execute
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "dialog": {
+        "items": [
+            {
+                "timestamp": "2024-08-07T00:00:00.000000+00:00",
+                "sourceType": "user",
+                "source": "0x02",
+                "blocks": [
+                    {
+                        "data": {
+                            "text": "doge"
+                        },
+                        "type": "text"
+                    }
+                ]
+            }
+        ]
+    }
+}
