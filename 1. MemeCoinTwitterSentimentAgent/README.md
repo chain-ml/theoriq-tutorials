@@ -19,6 +19,8 @@ By following this tutorial, you will:
 3. [Running and testing the agent](#running-the-agent)
 4. [Local Test vs. Registration on Theoriq Protocol](#local-test-vs-registration-on-theoriq-protocol)
 5. [SDK Request and Response Bodies](#sdk-request-and-response-bodies)
+6. [Exposing Agent's Endpoints](#exposing-agents-endpoints)
+7. [Registring the Agent in Infinity Hub](#registring-the-agent-in-infinity-hub)
 
 
 ## Prerequisites
@@ -28,7 +30,8 @@ Before starting, ensure you have the following:
 - Basic familiarity with Python
 - A Twitter Developer account with API access
 - OpenAI API Key
-- Python 3.10 or later installed.
+- Python 3.10 or later installed
+- An account on [Theoriq's Infinity Studio](https://infinity.theoriq.ai/)
 
 
 ## Keypair Generation
@@ -194,3 +197,35 @@ If user wants to ask another question, the protocol builds the following request
     }
 }
 ```
+
+## Exposing Agent's Endpoints
+
+After building the core logic of the agent and using the SDK to present the output in the required format, SDK makes it very easy to expose the required encpoints
+
+```python
+if __name__ == "__main__":
+    app = Flask(__name__)
+    log_config()
+
+    # Load agent configuration from env
+    dotenv.load_dotenv()
+    agent_config = AgentConfig.from_env()
+
+    # Create and register theoriq blueprint
+    blueprint = theoriq_blueprint(agent_config, memecoin_twitter)
+    app.register_blueprint(blueprint)
+    app.register_blueprint(routes)
+    logger.info(f"Agent address: {agent_config.address}")
+    threading.Thread(target=setup.init).start()
+
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5050")), debug=True)
+```
+
+## Registring the Agent in Infinity Hub
+
+When the agent is deployed and is ready to be registered in the [Infinity Hub](https://infinity.theoriq.ai/hub/agent-discover), developers need to follow the following steps:
+
+1. Make sure the deployed agent doesn't have the environment variables for local tests
+2. Navigate to the [Agent Registration Page][https://infinity.theoriq.ai/hub/agent-register] on Infinity Hub, and fill out the general information about your agent. At this step, you will be required to provide the public key of the agent
+3. After the registration is successful, developers have to [Mint](https://infinity.theoriq.ai/hub/agent-mint) their agent, which might take up to a minute.
+4. After the agent is successfully minted, developers can find their agent in the [Discover](https://infinity.theoriq.ai/hub/agent-discover) panel.
