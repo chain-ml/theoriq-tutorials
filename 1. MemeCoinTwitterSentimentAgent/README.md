@@ -112,7 +112,22 @@ Authorization: Bearer {{token}}
 }
 ```
 
-When this request is sent, the following will be the agent's response:
+When agent receives this request, since it doesn't support follow up questions, it only parses the message from the last block of non-router type. After performing the core logic and returning a result, it then uses the SDK to turn the results into what Theoriq Protocol expects
+
+```python
+from theoriq.execute import ExecuteContext
+
+#context: ExecuteContext
+
+answer = agent.sentiment_analysis(memecoin) # answer: str
+return context.new_free_response(
+    blocks=[
+        TextItemBlock(text=answer),
+    ]
+)
+```
+
+Since the output of this agent is only in `text` format, we build a `TextItemBlock`. Here is the final output of the agent
 
 ```python
 {
@@ -130,7 +145,7 @@ When this request is sent, the following will be the agent's response:
 }
 ```
 
-If user wants to ask a another question, the protocol builds the following request and sends it to the agent:
+If user wants to ask another question, the protocol builds the following request and sends it to the agent
 
 ```python
 {
@@ -179,5 +194,3 @@ If user wants to ask a another question, the protocol builds the following reque
     }
 }
 ```
-
-Since this agent doesn't support follow up questions, we only filter for the last request coming from non-router block.
