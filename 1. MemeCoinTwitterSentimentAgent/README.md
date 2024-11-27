@@ -115,7 +115,13 @@ Authorization: Bearer {{token}}
 }
 ```
 
-When agent receives this request, since it doesn't support follow up questions, it only parses the message from the last block of non-router type. After performing the core logic and returning a result, it then uses the SDK to turn the results into what Theoriq Protocol expects
+When agent receives this request, it extracts the last item of `SourceType.User`
+```python
+last_block = req.last_item_from(SourceType.User).blocks[0]
+memecoin = last_block.data.text
+```
+
+After performing the core logic and returning the analysis on the provided memecoin in `text` format, we have to use the SDK to create a `TextItemBlock` as the response
 
 ```python
 from theoriq.execute import ExecuteContext
@@ -130,7 +136,7 @@ return context.new_free_response(
 )
 ```
 
-Since the output of this agent is only in `text` format, we build a `TextItemBlock`. Here is the final output of the agent
+Here is the final output of the agent
 
 ```python
 {
@@ -148,7 +154,7 @@ Since the output of this agent is only in `text` format, we build a `TextItemBlo
 }
 ```
 
-If user wants to ask another question, the protocol builds the following request and sends it to the agent
+If user wants to ask another question in the same session, the protocol appends the agent's response from the previous question, with `sourceType = agent`, to the list of `items` in the `dialog`, as well as user's latest query, and sends it to the agent. Here is a sample request body of a session with multiple questions from user
 
 ```python
 {
