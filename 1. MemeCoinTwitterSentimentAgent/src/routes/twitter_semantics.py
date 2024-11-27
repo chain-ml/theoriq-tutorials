@@ -7,6 +7,7 @@ from agent import MemecoinTwitterAgent
 
 from theoriq.execute import ExecuteContext, ExecuteResponse
 from theoriq.schemas import ExecuteRequestBody, TextItemBlock
+from theoriq.types import SourceType
 
 from . import routes
 
@@ -30,9 +31,7 @@ def memecoin_twitter(
             "If the problem persists, contact the agent developer!"
         )
     try:
-        last_block = req.last_item_predicate(
-            lambda item: item.blocks[0].block_type != "router"
-        ).blocks[0]
+        last_block = req.last_item_from(SourceType.User).blocks[0]
         memecoin = last_block.data.text
         logger.info(f"USER_INPUT={memecoin}")
 
