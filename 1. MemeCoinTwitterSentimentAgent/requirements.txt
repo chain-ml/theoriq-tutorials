@@ -1,0 +1,7 @@
+flask==3.0.3
+prometheus-client==0.20.0
+python-dotenv==1.0.*
+cachetools==5.5.0
+openai==1.51.2
+requests==2.32.3
+git+ssh://git@github.com/chain-ml/theoriq-agent-sdk.git@9e791b2#egg=theoriq[flask]
